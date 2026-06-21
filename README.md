@@ -158,3 +158,4 @@ The pre-built dashboard (`dashboards/exam-backend-dashboard.json`) shows CPU, me
 ## What's Intentionally Skipped
 
 - **HashiCorp Vault** — secrets management is simplified to a Kubernetes Secret for this build. If you add it back later, Vault would replace the static Secret in `k8s/namespace-and-secret.yaml` with dynamically injected secrets via the Vault Agent Injector.
+test
