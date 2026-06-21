@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const path = require('path');
 
+
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 // In-memory dummy exam data (replace with RDS/Postgres in production)
@@ -10,9 +13,6 @@ const exams = [
   { id: 2, title: 'Cloud Architecture', duration: 90 }
 ];
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Online Examination Platform API is running' });
-});
 
 // Liveness probe endpoint (used by Kubernetes)
 app.get('/healthz', (req, res) => {

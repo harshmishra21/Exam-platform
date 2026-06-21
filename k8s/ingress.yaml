@@ -9,7 +9,7 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
 spec:
   rules:
-    - host: exams.example.com
+    - host:    
       http:
         paths:
           - path: /

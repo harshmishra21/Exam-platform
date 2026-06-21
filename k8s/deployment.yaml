@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: exam-backend
-          image: <ECR_REPO_URL>:latest   # replaced by Jenkins during deploy
+          image: "833082650522.dkr.ecr.ap-south-1.amazonaws.com/exam-platform-backend:latest" # replaced by Jenkins during deploy
           ports:
             - containerPort: 3000
           env:

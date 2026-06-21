@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ITM Skills University — Online Examination Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF3E3;
+    --paper-dim:#F0E6CC;
+    --ink:#0E1526;
+    --ink-2:#161F38;
+    --ink-3:#1F2B4D;
+    --text-on-ink:#E9E4D6;
+    --graphite:#8C93A6;
+    --amber:#E8A33D;
+    --amber-dim:#C98A2C;
+    --red-pen:#C1432F;
+    --green-pen:#3F7D58;
+    --radius:6px;
+    --serif: 'Special Elite', monospace;
+    --sans: 'Inter', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--sans);
+    background:
+      radial-gradient(ellipse 900px 600px at 50% -10%, rgba(232,163,61,0.10), transparent 60%),
+      var(--ink);
+    color:var(--text-on-ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  #app{min-height:100vh; display:flex; flex-direction:column;}
+  a, button{font-family:inherit;}
+  button{cursor:pointer; border:none;}
+  button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid var(--amber); outline-offset:2px;
+  }
+  ::selection{background:var(--amber); color:var(--ink);}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px; border-bottom:1px solid rgba(233,228,214,0.08);
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:30px; height:30px; border:1.5px solid var(--amber); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-family:var(--serif);
+    font-size:13px; color:var(--amber);
+  }
+  .brand-name{font-family:var(--serif); font-size:14px; letter-spacing:0.04em; color:var(--text-on-ink);}
+  .brand-sub{font-size:11px; color:var(--graphite); margin-top:1px;}
+  .who{font-family:var(--mono); font-size:12px; color:var(--graphite);}
+  .who b{color:var(--amber); font-weight:600;}
+
+  /* ---------- Layout shell ---------- */
+  .stage{flex:1; display:flex; align-items:center; justify-content:center; padding:32px 20px;}
+  .stage.top-align{align-items:flex-start; padding-top:48px;}
+
+  /* ---------- Admit card / login ---------- */
+  .admit-card{
+    width:100%; max-width:420px;
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:var(--radius);
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.04);
+    position:relative;
+    overflow:hidden;
+  }
+  .admit-card::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height:6px;
+    background:repeating-linear-gradient(90deg, var(--amber) 0 14px, transparent 14px 22px);
+  }
+  .admit-head{padding:30px 30px 16px; border-bottom:1px dashed rgba(14,21,38,0.25);}
+  .admit-eyebrow{font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; color:var(--amber-dim); text-transform:uppercase; margin:0 0 6px;}
+  .admit-title{font-family:var(--serif); font-size:22px; margin:0 0 4px; line-height:1.3;}
+  .admit-desc{font-size:12.5px; color:#5B6472; margin:0;}
+  .admit-body{padding:24px 30px 30px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:11px; font-family:var(--mono); letter-spacing:0.04em; color:#5B6472; margin-bottom:6px; text-transform:uppercase;}
+  .field input{
+    width:100%; padding:11px 12px; border:1.5px solid rgba(14,21,38,0.18);
+    border-radius:4px; font-size:14.5px; font-family:var(--sans); background:#fff; color:var(--ink);
+  }
+  .field input:focus{border-color:var(--amber-dim);}
+  .btn-primary{
+    width:100%; padding:13px; background:var(--ink); color:var(--paper);
+    border-radius:4px; font-weight:600; font-size:14px; letter-spacing:0.01em;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .btn-primary:hover{background:var(--ink-3); transform:translateY(-1px);}
+  .admit-foot{
+    padding:14px 30px; background:var(--paper-dim); border-top:1px dashed rgba(14,21,38,0.2);
+    font-size:11px; color:#7A8194; font-family:var(--mono); text-align:center;
+  }
+
+  /* ---------- Dashboard ---------- */
+  .dash-wrap{width:100%; max-width:760px;}
+  .dash-head{margin-bottom:24px;}
+  .dash-eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:0.1em; color:var(--amber); text-transform:uppercase; margin:0 0 8px;}
+  .dash-title{font-family:var(--serif); font-size:26px; margin:0 0 6px;}
+  .dash-sub{font-size:13px; color:var(--graphite); margin:0;}
+
+  .exam-card{
+    background:var(--paper); color:var(--ink); border-radius:var(--radius);
+    padding:20px 22px; margin-bottom:14px; display:flex; align-items:center; gap:18px;
+    box-shadow:0 12px 30px -16px rgba(0,0,0,0.5);
+    border-left:4px solid var(--amber);
+    transition:transform .15s ease;
+  }
+  .exam-card:hover{transform:translateX(2px);}
+  .exam-card.done{border-left-color:var(--green-pen); opacity:0.88;}
+  .exam-num{font-family:var(--mono); font-size:11px; color:#9aa0b0; width:36px; flex-shrink:0;}
+  .exam-info{flex:1; min-width:0;}
+  .exam-info h3{margin:0 0 4px; font-size:16px; font-weight:700;}
+  .exam-meta{display:flex; gap:14px; font-size:12px; color:#6B7280; font-family:var(--mono);}
+  .exam-action{flex-shrink:0;}
+  .btn-take{
+    padding:9px 18px; background:var(--ink); color:var(--paper); border-radius:4px;
+    font-size:12.5px; font-weight:600;
+  }
+  .btn-take:hover{background:var(--ink-3);}
+  .pill-done{
+    font-size:11px; font-family:var(--mono); color:var(--green-pen); background:rgba(63,125,88,0.12);
+    padding:6px 12px; border-radius:20px; font-weight:600;
+  }
+
+  /* ---------- Quiz screen ---------- */
+  .quiz-wrap{width:100%; max-width:920px; display:grid; grid-template-columns:1fr 220px; gap:22px; align-items:start;}
+  @media (max-width:780px){ .quiz-wrap{grid-template-columns:1fr;} }
+
+  .timer-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:18px; padding:12px 18px; border-radius:var(--radius);
+    background:var(--ink-2); border:1px solid rgba(233,228,214,0.08);
+  }
+  .timer-left{font-size:12.5px; color:var(--graphite); font-family:var(--mono);}
+  .timer-left b{color:var(--text-on-ink);}
+  .clock{
+    font-family:var(--mono); font-size:20px; font-weight:600; letter-spacing:0.04em;
+    padding:6px 14px; border-radius:4px; background:rgba(232,163,61,0.12); color:var(--amber);
+    box-shadow:0 0 0 1px rgba(232,163,61,0.25);
+  }
+  .clock.danger{color:var(--red-pen); background:rgba(193,67,47,0.14); box-shadow:0 0 0 1px rgba(193,67,47,0.3); animation:tick 1s infinite;}
+  @keyframes tick{0%,100%{opacity:1;}50%{opacity:0.6;}}
+  @media (prefers-reduced-motion: reduce){ .clock.danger{animation:none;} }
+
+  .qcard{
+    background:var(--paper); color:var(--ink); border-radius:var(--radius);
+    padding:28px 30px; box-shadow:0 20px 50px -24px rgba(0,0,0,0.55);
+    position:relative;
+  }
+  .qcard::before{
+    content:""; position:absolute; inset:0; border-radius:var(--radius);
+    box-shadow:0 0 0 1px rgba(14,21,38,0.06); pointer-events:none;
+  }
+  .qhead{display:flex; align-items:baseline; gap:10px; margin-bottom:18px;}
+  .qnum{font-family:var(--mono); font-size:12px; color:var(--amber-dim); font-weight:600;}
+  .qtext{font-size:17px; font-weight:600; line-height:1.5; margin:0;}
+
+  .options{display:flex; flex-direction:column; gap:10px;}
+  .option{
+    display:flex; align-items:center; gap:14px; padding:13px 16px;
+    border:1.5px solid rgba(14,21,38,0.14); border-radius:4px; background:#fff;
+    transition:border-color .12s ease, background .12s ease;
+  }
+  .option:hover{border-color:var(--amber-dim); background:#FFFCF4;}
+  .option.selected{border-color:var(--ink); background:#FFF8E8;}
+  .bubble{
+    width:22px; height:22px; border-radius:50%; border:2px solid #9aa0b0;
+    flex-shrink:0; position:relative; display:flex; align-items:center; justify-content:center;
+  }
+  .option.selected .bubble{border-color:var(--ink);}
+  .bubble::after{
+    content:""; width:12px; height:12px; border-radius:50%; background:var(--ink);
+    transform:scale(0); transition:transform .15s ease;
+  }
+  .option.selected .bubble::after{transform:scale(1);}
+  .opt-label{font-family:var(--mono); font-size:11px; color:#9aa0b0; font-weight:600; width:14px;}
+  .option.selected .opt-label{color:var(--ink);}
+  .opt-text{font-size:14.5px; flex:1;}
+
+  .qnav{display:flex; justify-content:space-between; margin-top:24px; gap:12px;}
+  .btn-ghost{
+    padding:10px 18px; background:transparent; border:1.5px solid rgba(14,21,38,0.18);
+    color:var(--ink); border-radius:4px; font-size:13px; font-weight:600;
+  }
+  .btn-ghost:hover{background:rgba(14,21,38,0.05);}
+  .btn-ghost:disabled{opacity:0.35; cursor:not-allowed;}
+  .btn-dark{
+    padding:10px 20px; background:var(--ink); color:var(--paper); border-radius:4px;
+    font-size:13px; font-weight:700;
+  }
+  .btn-dark:hover{background:var(--ink-3);}
+  .btn-submit{background:var(--green-pen); color:#fff;}
+  .btn-submit:hover{background:#356b4a;}
+
+  /* ---------- Palette (sidebar) ---------- */
+  .palette{
+    background:var(--ink-2); border:1px solid rgba(233,228,214,0.08);
+    border-radius:var(--radius); padding:18px;
+  }
+  .palette h4{margin:0 0 12px; font-size:11px; font-family:var(--mono); letter-spacing:0.08em; color:var(--graphite); text-transform:uppercase;}
+  .pal-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:8px;}
+  .pal-item{
+    aspect-ratio:1; border-radius:4px; font-family:var(--mono); font-size:12px; font-weight:600;
+    display:flex; align-items:center; justify-content:center; background:rgba(233,228,214,0.06);
+    color:var(--graphite); border:1px solid rgba(233,228,214,0.1);
+  }
+  .pal-item.current{background:var(--amber); color:var(--ink); border-color:var(--amber);}
+  .pal-item.answered{background:rgba(63,125,88,0.22); color:#9CD6B0; border-color:rgba(63,125,88,0.4);}
+  .legend{display:flex; flex-direction:column; gap:6px; margin-top:14px; font-size:11px; color:var(--graphite); font-family:var(--mono);}
+  .legend span{display:flex; align-items:center; gap:7px;}
+  .dot{width:9px; height:9px; border-radius:2px; display:inline-block;}
+
+  /* ---------- Result screen ---------- */
+  .result-wrap{width:100%; max-width:680px;}
+  .result-head{
+    background:var(--paper); color:var(--ink); border-radius:var(--radius);
+    padding:30px; text-align:center; margin-bottom:18px; position:relative; overflow:hidden;
+  }
+  .result-head::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:6px;
+    background:repeating-linear-gradient(90deg, var(--green-pen) 0 14px, transparent 14px 22px);
+  }
+  .score-stamp{
+    font-family:var(--serif); font-size:46px; color:var(--green-pen); margin:6px 0 4px;
+    transform:rotate(-2deg); display:inline-block;
+  }
+  .score-label{font-family:var(--mono); font-size:12px; color:#7A8194; text-transform:uppercase; letter-spacing:0.08em;}
+  .result-row{
+    background:var(--paper); border-radius:var(--radius); padding:16px 20px; margin-bottom:10px;
+    display:flex; gap:14px; align-items:flex-start;
+  }
+  .result-row .mark{
+    width:24px; height:24px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; color:#fff;
+  }
+  .mark.correct{background:var(--green-pen);}
+  .mark.wrong{background:var(--red-pen);}
+  .result-row .rtext{color:var(--ink); font-size:13.5px;}
+  .result-row .rtext p{margin:0 0 6px; font-weight:600;}
+  .result-row .rtext .ans{font-size:12.5px; color:#6B7280; font-family:var(--mono);}
+  .result-actions{display:flex; gap:12px; margin-top:18px; justify-content:center;}
+
+  .empty-note{font-size:12px; color:var(--graphite); text-align:center; margin-top:10px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ---------------- Mock data ---------------- */
+const EXAMS = [
+  {
+    id:1, title:"DevOps Fundamentals", subject:"Core Concepts", duration:5,
+    questions:[
+      {q:"What does CI in CI/CD stand for?", opts:["Code Integration","Continuous Integration","Container Instance","Cloud Init"], correct:1},
+      {q:"Which tool is primarily used for containerization?", opts:["Jenkins","Terraform","Docker","Grafana"], correct:2},
+      {q:"What is the purpose of a Kubernetes HPA?", opts:["Encrypt secrets","Autoscale pods based on metrics","Build Docker images","Manage DNS"], correct:1},
+      {q:"Which AWS service provides managed Kubernetes?", opts:["EC2","EKS","S3","RDS"], correct:1},
+      {q:"What does IaC stand for?", opts:["Infrastructure as Code","Internet access Control","Image as Container","Instance auto Config"], correct:0},
+    ]
+  },
+  {
+    id:2, title:"Cloud Architecture Basics", subject:"AWS", duration:5,
+    questions:[
+      {q:"What is the function of a VPC?", opts:["Store files","Isolated virtual network","Run containers","Monitor logs"], correct:1},
+      {q:"Which AWS service is an object storage?", opts:["RDS","S3","EC2","IAM"], correct:1},
+      {q:"What does a NAT Gateway allow?", opts:["Private subnets to access internet outbound","Public access to RDS","Load balancing","DNS resolution"], correct:0},
+      {q:"What is the purpose of IAM?", opts:["Networking","Identity and access management","Image storage","Monitoring"], correct:1},
+      {q:"What does RDS provide?", opts:["Managed relational database","Container registry","Load balancer","DNS service"], correct:0},
+    ]
+  },
+  {
+    id:3, title:"Monitoring Essentials", subject:"Observability", duration:5,
+    questions:[
+      {q:"What does Prometheus primarily do?", opts:["Visualize dashboards","Collect and store metrics","Build containers","Manage secrets"], correct:1},
+      {q:"What is Grafana mainly used for?", opts:["Metric collection","Dashboard visualization","CI/CD pipelines","Image building"], correct:1},
+      {q:"What is a 'ServiceMonitor' used for in Prometheus Operator?", opts:["Define scrape targets","Create deployments","Manage secrets","Build images"], correct:0},
+      {q:"What does HPA use to scale pods?", opts:["Random selection","Resource metrics (CPU/memory)","Manual input only","DNS records"], correct:1},
+      {q:"Which tool is commonly used for log aggregation?", opts:["ELK Stack","Terraform","Docker Compose","IAM"], correct:0},
+    ]
+  }
+];
+
+/* ---------------- State ---------------- */
+let state = {
+  screen:'login',
+  student:null,
+  currentExamId:null,
+  answers:{},
+  qIndex:0,
+  timeLeft:0,
+  timerHandle:null,
+  completed:{},   // examId -> { score, total, answers }
+};
+
+const root = document.getElementById('app');
+
+function render(){
+  if(state.screen==='login') return renderLogin();
+  if(state.screen==='dashboard') return renderDashboard();
+  if(state.screen==='quiz') return renderQuiz();
+  if(state.screen==='result') return renderResult();
+}
+
+/* ---------------- Topbar ---------------- */
+function topbar(){
+  return `
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">IT</div>
+        <div>
+          <div class="brand-name">ITM SKILLS UNIVERSITY</div>
+          <div class="brand-sub">Online Examination Portal</div>
+        </div>
+      </div>
+      ${state.student ? `<div class="who">Signed in as <b>${state.student.name}</b> · Roll No. ${state.student.roll}</div>` : ''}
+    </div>
+  `;
+}
+
+/* ---------------- Login ---------------- */
+function renderLogin(){
+  root.innerHTML = `
+    ${topbar()}
+    <div class="stage">
+      <div class="admit-card">
+        <div class="admit-head">
+          <p class="admit-eyebrow">Admit Card · Login</p>
+          <h2 class="admit-title">Enter the Examination Hall</h2>
+          <p class="admit-desc">Provide your details exactly as registered to access your assigned exams.</p>
+        </div>
+        <div class="admit-body">
+          <div class="field">
+            <label for="f-name">Full Name</label>
+            <input id="f-name" type="text" placeholder="e.g. Harsh Mishra" />
+          </div>
+          <div class="field">
+            <label for="f-roll">Roll Number</label>
+            <input id="f-roll" type="text" placeholder="e.g. ITM2026045" />
+          </div>
+          <button class="btn-primary" id="btn-login">Enter Hall →</button>
+        </div>
+        <div class="admit-foot">Candidates must carry a valid admit card at all times</div>
+      </div>
+    </div>
+  `;
+  document.getElementById('btn-login').onclick = ()=>{
+    const name = document.getElementById('f-name').value.trim();
+    const roll = document.getElementById('f-roll').value.trim();
+    if(!name || !roll){ alert('Please enter both your name and roll number.'); return; }
+    state.student = { name, roll };
+    state.screen = 'dashboard';
+    render();
+  };
+}
+
+/* ---------------- Dashboard ---------------- */
+function renderDashboard(){
+  const rows = EXAMS.map((e,i)=>{
+    const done = state.completed[e.id];
+    return `
+      <div class="exam-card ${done?'done':''}">
+        <div class="exam-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="exam-info">
+          <h3>${e.title}</h3>
+          <div class="exam-meta">
+            <span>${e.subject}</span>
+            <span>⏱ ${e.duration} min</span>
+            <span>${e.questions.length} questions</span>
+          </div>
+        </div>
+        <div class="exam-action">
+          ${done
+            ? `<span class="pill-done">Scored ${done.score}/${done.total}</span>`
+            : `<button class="btn-take" data-id="${e.id}">Start Exam</button>`}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  root.innerHTML = `
+    ${topbar()}
+    <div class="stage top-align">
+      <div class="dash-wrap">
+        <div class="dash-head">
+          <p class="dash-eyebrow">Your Schedule</p>
+          <h1 class="dash-title">Available Examinations</h1>
+          <p class="dash-sub">Each exam is timed and auto-submits when the clock runs out. Once submitted, answers cannot be changed.</p>
+        </div>
+        ${rows}
+      </div>
+    </div>
+  `;
+
+  root.querySelectorAll('.btn-take').forEach(btn=>{
+    btn.onclick = ()=> startExam(parseInt(btn.dataset.id));
+  });
+}
+
+/* ---------------- Quiz logic ---------------- */
+function startExam(examId){
+  const exam = EXAMS.find(e=>e.id===examId);
+  state.currentExamId = examId;
+  state.answers = {};
+  state.qIndex = 0;
+  state.timeLeft = exam.duration * 60;
+  state.screen = 'quiz';
+  render();
+  clearInterval(state.timerHandle);
+  state.timerHandle = setInterval(()=>{
+    state.timeLeft--;
+    if(state.timeLeft<=0){
+      clearInterval(state.timerHandle);
+      submitExam();
+      return;
+    }
+    updateTimerOnly();
+  },1000);
+}
+
+function fmtTime(s){
+  const m = Math.floor(s/60).toString().padStart(2,'0');
+  const sec = (s%60).toString().padStart(2,'0');
+  return `${m}:${sec}`;
+}
+
+function updateTimerOnly(){
+  const clockEl = document.getElementById('clock-display');
+  if(!clockEl) return;
+  clockEl.textContent = fmtTime(state.timeLeft);
+  clockEl.classList.toggle('danger', state.timeLeft <= 30);
+}
+
+function renderQuiz(){
+  const exam = EXAMS.find(e=>e.id===state.currentExamId);
+  const q = exam.questions[state.qIndex];
+  const selected = state.answers[state.qIndex];
+  const letters = ['A','B','C','D'];
+
+  const optsHtml = q.opts.map((opt,i)=>`
+    <div class="option ${selected===i?'selected':''}" data-i="${i}">
+      <div class="bubble"></div>
+      <span class="opt-label">${letters[i]}</span>
+      <span class="opt-text">${opt}</span>
+    </div>
+  `).join('');
+
+  const paletteHtml = exam.questions.map((_,i)=>{
+    const cls = i===state.qIndex ? 'current' : (state.answers[i]!==undefined ? 'answered' : '');
+    return `<div class="pal-item ${cls}" data-i="${i}">${i+1}</div>`;
+  }).join('');
+
+  const answeredCount = Object.keys(state.answers).length;
+
+  root.innerHTML = `
+    ${topbar()}
+    <div class="stage top-align">
+      <div class="quiz-wrap">
+        <div>
+          <div class="timer-bar">
+            <div class="timer-left">${exam.title} · <b>${answeredCount}/${exam.questions.length}</b> answered</div>
+            <div class="clock" id="clock-display">${fmtTime(state.timeLeft)}</div>
+          </div>
+          <div class="qcard">
+            <div class="qhead">
+              <span class="qnum">Q${state.qIndex+1}/${exam.questions.length}</span>
+            </div>
+            <p class="qtext">${q.q}</p>
+            <div class="options">${optsHtml}</div>
+            <div class="qnav">
+              <button class="btn-ghost" id="btn-prev" ${state.qIndex===0?'disabled':''}>← Previous</button>
+              ${state.qIndex===exam.questions.length-1
+                ? `<button class="btn-dark btn-submit" id="btn-submit">Submit Exam ✓</button>`
+                : `<button class="btn-dark" id="btn-next">Next →</button>`}
+            </div>
+          </div>
+        </div>
+        <div class="palette">
+          <h4>Question Palette</h4>
+          <div class="pal-grid">${paletteHtml}</div>
+          <div class="legend">
+            <span><span class="dot" style="background:var(--amber)"></span> Current</span>
+            <span><span class="dot" style="background:rgba(63,125,88,0.5)"></span> Answered</span>
+            <span><span class="dot" style="background:rgba(233,228,214,0.15)"></span> Not visited</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  root.querySelectorAll('.option').forEach(opt=>{
+    opt.onclick = ()=>{
+      state.answers[state.qIndex] = parseInt(opt.dataset.i);
+      renderQuiz();
+    };
+  });
+  const prevBtn = document.getElementById('btn-prev');
+  if(prevBtn) prevBtn.onclick = ()=>{ state.qIndex--; renderQuiz(); };
+  const nextBtn = document.getElementById('btn-next');
+  if(nextBtn) nextBtn.onclick = ()=>{ state.qIndex++; renderQuiz(); };
+  const submitBtn = document.getElementById('btn-submit');
+  if(submitBtn) submitBtn.onclick = ()=>{
+    if(confirm('Submit the exam? You cannot change answers after this.')) submitExam();
+  };
+  root.querySelectorAll('.pal-item').forEach(item=>{
+    item.onclick = ()=>{ state.qIndex = parseInt(item.dataset.i); renderQuiz(); };
+  });
+}
+
+function submitExam(){
+  clearInterval(state.timerHandle);
+  const exam = EXAMS.find(e=>e.id===state.currentExamId);
+  let score = 0;
+  exam.questions.forEach((q,i)=>{ if(state.answers[i]===q.correct) score++; });
+  state.completed[exam.id] = { score, total:exam.questions.length, answers:{...state.answers} };
+  state.screen = 'result';
+  render();
+}
+
+/* ---------------- Result ---------------- */
+function renderResult(){
+  const exam = EXAMS.find(e=>e.id===state.currentExamId);
+  const result = state.completed[exam.id];
+  const pct = Math.round((result.score/result.total)*100);
+
+  const rows = exam.questions.map((q,i)=>{
+    const given = result.answers[i];
+    const correct = q.correct;
+    const isCorrect = given === correct;
+    const letters = ['A','B','C','D'];
+    return `
+      <div class="result-row">
+        <div class="mark ${isCorrect?'correct':'wrong'}">${isCorrect?'✓':'✕'}</div>
+        <div class="rtext">
+          <p>Q${i+1}. ${q.q}</p>
+          <div class="ans">
+            Your answer: ${given!==undefined ? letters[given]+'. '+q.opts[given] : '— Not attempted'}
+            ${!isCorrect ? `<br>Correct answer: ${letters[correct]}. ${q.opts[correct]}` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  root.innerHTML = `
+    ${topbar()}
+    <div class="stage top-align">
+      <div class="result-wrap">
+        <div class="result-head">
+          <p class="score-label">Exam Submitted · ${exam.title}</p>
+          <div class="score-stamp">${result.score}/${result.total}</div>
+          <p class="score-label">${pct}% Score</p>
+        </div>
+        ${rows}
+        <div class="result-actions">
+          <button class="btn-ghost" id="btn-dashboard" style="background:var(--paper); color:var(--ink);">← Back to Dashboard</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('btn-dashboard').onclick = ()=>{ state.screen='dashboard'; render(); };
+}
+
+render();
+</script>
+</body>
+</html>

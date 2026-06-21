@@ -5,10 +5,10 @@ resource "aws_security_group" "rds_sg" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    cidr_blocks     = [var.vpc_cidr]
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
   }
 
   egress {
@@ -32,7 +32,7 @@ resource "aws_db_subnet_group" "main" {
 resource "aws_db_instance" "main" {
   identifier              = "${var.project_name}-db"
   engine                  = "postgres"
-  engine_version          = "16.3"
+  engine_version          = "16.14"
   instance_class          = "db.t3.micro"
   allocated_storage       = 20
   storage_type            = "gp3"
@@ -44,7 +44,7 @@ resource "aws_db_instance" "main" {
   skip_final_snapshot     = true
   multi_az                = false
   publicly_accessible     = false
-  backup_retention_period = 7
+  backup_retention_period = 0
 
   tags = { Name = "${var.project_name}-db" }
 }
