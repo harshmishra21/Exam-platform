@@ -1,0 +1,13 @@
+{
+  "name": "exam-platform-backend",
+  "version": "1.0.0",
+  "description": "Online Examination Platform - Backend API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"No tests specified yet\" && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

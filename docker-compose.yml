@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  exam-backend:
+    build: ./app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+    depends_on:
+      - postgres
+    networks:
+      - exam-net
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: examuser
+      POSTGRES_PASSWORD: examplaceholderpassword
+      POSTGRES_DB: examdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - exam-net
+
+volumes:
+  pgdata:
+
+networks:
+  exam-net:
+    driver: bridge
