@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         AWS_REGION      = 'ap-south-1'
-        ECR_REPO        = "833082650522.dkr.ecr.ap-south-1.amazonaws.com/exam-platform-backend"      // from terraform output
+        ECR_REPO        = "833082650522.dkr.ecr.ap-south-1.amazonaws.com/exam-platform-backend"     // from terraform output
         IMAGE_TAG       = "${env.BUILD_NUMBER}"
         EKS_CLUSTER     = 'exam-platform-eks'
         K8S_NAMESPACE   = 'exam-platform'
